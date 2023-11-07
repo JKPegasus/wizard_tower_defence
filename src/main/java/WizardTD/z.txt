@@ -1,0 +1,130 @@
+    public void drawTower(ArrayList<Monsters> monsters) {
+        // get the position of the monster
+        for (Monsters monster : monsters) {
+            float[] monster_pos = monster.getPos();
+            float x_monster = monster_pos[0];
+            float y_monster = monster_pos[1];
+
+            tower_array = towerButton.getTowerArray();
+
+            for (Tower tower : tower_array) {
+
+                float[] tower_pos = tower.getPos();
+                float x_tower = tower_pos[0];
+                float y_tower = tower_pos[1];
+                image(tower0_img, x_tower, 40+y_tower, CELLSIZE, CELLSIZE);
+
+                // draw the range of tower
+                if (mouseX >= x_tower && mouseX <= x_tower + CELLSIZE && mouseY >= 40+y_tower && mouseY <= 40+y_tower + CELLSIZE) {
+                    tower.displayRange();
+                }
+
+                // check the monster in the range of tower
+                if (Math.ceil(Math.abs(Math.sqrt(Math.pow(6+x_monster-x_tower, 2)+Math.pow(46+y_monster-(40+y_tower), 2)))) == tower.getRange()) {
+                    System.out.println("in range");
+                    monster.setInRange();
+                    inRangeList.add(monster);
+                }
+
+                // set the start fire of tower
+                tower.setStartFire(inRangeList);
+
+                // remove the monster out of the range of tower
+                for (int i = 0; i < inRangeList.size(); i++) {
+
+                    if (inRangeList.get(i).getInRange() == 0) {
+                        inRangeList.remove(i);
+                    }
+                }
+
+                // create the fireBall
+                if (tower.getStartFire() && (tower.getInRangeFrame() == (int)tower.getFireRate()*FPS)) {
+                    fireBall fireBall = new fireBall(x_tower, 40+y_tower);
+                    fireBall_array.add(fireBall);
+                }
+
+                // draw the fireBall
+                for (fireBall fireBall : fireBall_array) {
+                    if (!fireBall.getIsHit()) {
+                        float[] fireBall_pos = fireBall.getFireBallPos();
+                        float fireBall_posX = fireBall_pos[0];
+                        float fireBall_posY = fireBall_pos[1];
+                        image(fireBall_img, fireBall_posX, fireBall_posY, 6, 6);
+                        Random random = new Random();
+                        int upperbound = inRangeList.size();
+                        int int_random = random.nextInt(upperbound);
+                        fireBall.changePos(inRangeList.get(int_random).getPos());
+                    }
+                }
+            }
+        }
+        
+        // count up the inRangeFrame
+        for (Tower tower : tower_array) {
+            tower.countUpInRangeFrame();
+        }
+    }
+
+
+
+
+    /**
+        * draw the tower
+        */
+    public void drawTower(ArrayList<Monsters> monsters) {
+
+        // get the position of the monster
+        for (Monsters monster : monsters) {
+            float[] monster_pos = monster.getPos();
+            float x_monster = monster_pos[0];
+            float y_monster = monster_pos[1];
+
+            tower_array = towerButton.getTowerArray();
+
+            for (Tower tower : tower_array) {
+
+                float[] tower_pos = tower.getPos();
+                float x_tower = tower_pos[0];
+                float y_tower = tower_pos[1];
+                image(tower0_img, x_tower, 40+y_tower, CELLSIZE, CELLSIZE);
+
+                // draw the range of tower
+                if (mouseX >= x_tower && mouseX <= x_tower + CELLSIZE && mouseY >= 40+y_tower && mouseY <= 40+y_tower + CELLSIZE) {
+                    tower.displayRange();
+                }
+
+                // check the monster in the range of tower
+                if (Math.ceil(Math.abs(Math.sqrt(Math.pow(6+x_monster-x_tower, 2)+Math.pow(46+y_monster-(40+y_tower), 2)))) == tower.getRange()) {
+                    System.out.println("in range");
+                    monster.setInRange();
+                    inRangeList.add(monster);
+                }
+
+                // remove the monster out of the range of tower or create the fireBall while in range
+                for (int i = 0; i < inRangeList.size(); i++) {
+
+                    if (inRangeList.get(i).getInRange() == 0) {
+                        inRangeList.remove(i);
+                    } else if (inRangeList.get(i).getInRange() == 1) {
+                        fireBall fireBall = new fireBall(6+x_monster, 46+y_monster, x_tower, 40+y_tower);
+                        fireBall_array.add(fireBall);
+                    }
+                }
+
+                // draw the fireBall
+                for (fireBall fireBall : fireBall_array) {
+                    if (!fireBall.getIsHit()) {
+                        float[] fireBall_pos = fireBall.getFireBallPos();
+                        float fireBall_posX = fireBall_pos[0];
+                        float fireBall_posY = fireBall_pos[1];
+                        image(fireBall_img, fireBall_posX, fireBall_posY, 6, 6);
+                        fireBall.changePos(monster_pos);
+                    }
+                }
+            }
+        }
+    }
+
+
+
+    96
